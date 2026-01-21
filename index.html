@@ -47,12 +47,18 @@
 
       <div class="lunch-inputs">
         <div class="input-item">
-          <label for="lunchStart">Début</label>
-          <input type="time" id="lunchStart" value="12:00">
+          <div class="input-field">
+            <label for="lunchStart">Début</label>
+            <input type="time" id="lunchStart" value="12:00">
+          </div>
+          <button class="btn-now btn-now--mini" onclick="setNow('lunchStart')">Maintenant</button>
         </div>
         <div class="input-item">
-          <label for="lunchEnd">Fin</label>
-          <input type="time" id="lunchEnd" value="13:00">
+          <div class="input-field">
+            <label for="lunchEnd">Fin</label>
+            <input type="time" id="lunchEnd" value="13:00">
+          </div>
+          <button class="btn-now btn-now--mini" onclick="setNow('lunchEnd')">Maintenant</button>
         </div>
       </div>
     </div>

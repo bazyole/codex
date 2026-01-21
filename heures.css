@@ -194,6 +194,24 @@ input[type="time"]:focus, input[type="number"]:focus{
   gap: 12px;
 }
 
+.input-item{
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 8px;
+}
+
+.input-field{
+  min-width: 0;
+}
+
+.btn-now--mini{
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+}
+
 .results-section{
   margin-top: 16px;
   padding: 16px;
@@ -348,6 +366,8 @@ input[type="time"]:focus, input[type="number"]:focus{
   .input-row{ grid-template-columns: 1fr; }
   .btn-now{ width: 100%; }
   .lunch-inputs{ grid-template-columns: 1fr; }
+  .input-item{ grid-template-columns: 1fr; }
+  .btn-now--mini{ width: 100%; }
   .result-main{ flex-direction: column; align-items: flex-start; }
 }
 
