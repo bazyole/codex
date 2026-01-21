@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculateur d'Heures de Travail</title>
+
+  <!-- Police plus “humaine” et moderne (optionnel mais recommandé) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #0f172a;      /* slate-900 */
+      --muted: #64748b;     /* slate-500 */
+      --border: #e5e7eb;    /* gray-200 */
+      --shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+      --shadow-soft: 0 6px 16px rgba(15, 23, 42, 0.06);
+      --radius: 18px;
+
+      --accent: #4f46e5;    /* indigo-600 */
+      --accent-2: #7c3aed;  /* violet-600 */
+      --good: #16a34a;      /* green-600 */
+      --warn: #f59e0b;      /* amber-500 */
+
+      --focus: 0 0 0 4px rgba(79, 70, 229, 0.18);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { height: 100%; }
+
+    body{
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 500px at 10% 0%, rgba(79,70,229,0.10), transparent 60%),
+        radial-gradient(900px 500px at 90% 10%, rgba(124,58,237,0.08), transparent 55%),
+        var(--bg);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .container{
+      width: 100%;
+      max-width: 560px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 26px;
+    }
+
+    .header{
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .header h1{
+      margin: 0;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .subtitle{
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .current-time{
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      text-align: right;
+      white-space: nowrap;
+    }
+    .current-time span{
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .divider{
+      height: 1px;
+      background: var(--border);
+      margin: 16px 0 18px;
+    }
+
+    .time-section{
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: var(--shadow-soft);
+      background: #fff;
+      margin-bottom: 14px;
+    }
+
+    .section-title{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .section-title h2{
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 650;
+      letter-spacing: -0.01em;
+    }
+
+    .badge{
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.82rem;
+      background: #fafafa;
+    }
+
+    .badge .dot{
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+    .badge.morning .dot{ background: #f59e0b; }
+    .badge.lunch .dot{ background: #06b6d4; }
+    .badge.evening .dot{ background: #6366f1; }
+
+    label{
+      display: block;
+      font-size: 0.86rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .input-row{
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 12px;
+    }
+
+    input[type="time"], input[type="number"]{
+      width: 100%;
+      padding: 12px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: inherit;
+      background: #fff;
+      color: var(--text);
+      transition: box-shadow .15s ease, border-color .15s ease, transform .05s ease;
+    }
+
+    input[type="time"]{
+      font-variant-numeric: tabular-nums;
+    }
+
+    input[type="time"]:focus, input[type="number"]:focus{
+      outline: none;
+      border-color: rgba(79, 70, 229, 0.55);
+      box-shadow: var(--focus);
+    }
+
+    .btn-now{
+      height: 44px;
+      padding: 0 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(79,70,229,0.25);
+      background: rgba(79,70,229,0.08);
+      color: var(--text);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s ease, border-color .15s ease, transform .05s ease;
+    }
+    .btn-now:hover{
+      background: rgba(79,70,229,0.12);
+      border-color: rgba(79,70,229,0.35);
+    }
+    .btn-now:active{ transform: translateY(1px); }
+    .btn-now:focus-visible{
+      outline: none;
+      box-shadow: var(--focus);
+    }
+
+    .lunch-inputs{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .results-section{
+      margin-top: 16px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfbfd 100%);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .result-main{
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 12px;
+    }
+
+    .result-label{
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .result-value{
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 750;
+      letter-spacing: -0.02em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .result-value.highlight{
+      color: var(--text);
+    }
+
+    .progress-container{
+      margin-top: 12px;
+    }
+
+    .progress-top{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .progress-bar{
+      height: 10px;
+      background: #eceef3;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid #e6e8ef;
+    }
+    .progress-fill{
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      border-radius: 999px;
+      transition: width 0.35s ease;
+    }
+
+    .target-section{
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px dashed rgba(100,116,139,0.35);
+    }
+    .target-section.hidden{ display: none; }
+
+    .target-title{
+      margin: 0 0 10px 0;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .target-input-group{
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .target-input-group span{
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    #targetHours{
+      width: 96px;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .departure-result{
+      border-radius: 14px;
+      padding: 14px;
+      border: 1px solid rgba(79,70,229,0.22);
+      background: rgba(79,70,229,0.08);
+    }
+
+    .departure-result .label{
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 6px;
+    }
+    .departure-result .time{
+      font-size: 1.6rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    .btn-reset{
+      width: 100%;
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      font-weight: 650;
+      cursor: pointer;
+      transition: background .15s ease, transform .05s ease, box-shadow .15s ease;
+    }
+    .btn-reset:hover{
+      background: #fafafa;
+      box-shadow: var(--shadow-soft);
+    }
+    .btn-reset:active{ transform: translateY(1px); }
+    .btn-reset:focus-visible{
+      outline: none;
+      box-shadow: var(--focus);
+    }
+
+    .info-text{
+      margin: 12px 0 0;
+      font-size: 0.82rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* Responsive */
+    @media (max-width: 520px){
+      .container{ padding: 18px; }
+      .header{ flex-direction: column; align-items: flex-start; }
+      .current-time{ text-align: left; }
+      .input-row{ grid-template-columns: 1fr; }
+      .btn-now{ width: 100%; }
+      .lunch-inputs{ grid-template-columns: 1fr; }
+      .result-main{ flex-direction: column; align-items: flex-start; }
+    }
+
+    /* Bonus: préfère réduire les animations */
+    @media (prefers-reduced-motion: reduce){
+      .progress-fill, input, button{ transition: none !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <h1>Calculateur d'heures</h1>
+        <div class="subtitle">Suivi simple du temps travaillé et heure de départ cible.</div>
+      </div>
+      <p class="current-time">Heure actuelle : <span id="currentTime">--:--</span></p>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="time-section">
+      <div class="section-title">
+        <h2>Arrivée</h2>
+        <span class="badge morning"><span class="dot"></span> Matin</span>
+      </div>
+
+      <div class="input-row">
+        <div>
+          <label for="arrivalTime">Heure d'arrivée</label>
+          <input type="time" id="arrivalTime" value="09:00">
+        </div>
+        <button class="btn-now" onclick="setNow('arrivalTime')">Maintenant</button>
+      </div>
+    </div>
+
+    <div class="time-section">
+      <div class="section-title">
+        <h2>Pause déjeuner</h2>
+        <span class="badge lunch"><span class="dot"></span> Pause</span>
+      </div>
+
+      <div class="lunch-inputs">
+        <div class="input-item">
+          <label for="lunchStart">Début</label>
+          <input type="time" id="lunchStart" value="12:00">
+        </div>
+        <div class="input-item">
+          <label for="lunchEnd">Fin</label>
+          <input type="time" id="lunchEnd" value="13:00">
+        </div>
+      </div>
+    </div>
+
+    <div class="time-section">
+      <div class="section-title">
+        <h2>Départ</h2>
+        <span class="badge evening"><span class="dot"></span> Soir</span>
+      </div>
+
+      <div class="input-row">
+        <div>
+          <label for="departureTime">Heure de départ</label>
+          <input type="time" id="departureTime" placeholder="--:--">
+        </div>
+        <button class="btn-now" onclick="setNow('departureTime')">Maintenant</button>
+      </div>
+    </div>
+
+    <div class="results-section">
+      <div class="result-main">
+        <p class="result-label">Heures travaillées</p>
+        <p class="result-value highlight" id="totalHours">0h 00min</p>
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-top">
+          <span>Progression</span>
+          <span>Objectif : <strong>8h</strong></span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="target-section" id="targetSection">
+          <p class="target-title">Calculer l'heure de départ nécessaire (si “Départ” est vide)</p>
+
+          <div class="target-input-group">
+            <span>Objectif</span>
+            <input type="number" id="targetHours" value="8" min="0" max="24" step="0.5">
+            <span>heures</span>
+          </div>
+
+          <div class="departure-result" id="departureResult">
+            <div class="label">Vous devez partir à</div>
+            <div class="time" id="requiredDeparture">--:--</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-reset" onclick="resetForm()">Réinitialiser</button>
+    <p class="info-text">Astuce : laisse “Départ” vide pour afficher l’heure de sortie cible.</p>
+  </div>
+
+  <script>
+    function updateCurrentTime() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('currentTime').textContent = `${hours}:${minutes}`;
+    }
+
+    function setNow(inputId) {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById(inputId).value = `${hours}:${minutes}`;
+      calculateHours();
+    }
+
+    function timeToMinutes(timeStr) {
+      if (!timeStr) return null;
+      const [hours, minutes] = timeStr.split(':').map(Number);
+      return hours * 60 + minutes;
+    }
+
+    function minutesToTime(totalMinutes) {
+      if (totalMinutes < 0) totalMinutes = 0;
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = Math.round(totalMinutes % 60);
+      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+    }
+
+    function formatDuration(totalMinutes) {
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = Math.round(totalMinutes % 60);
+      return `${hours}h ${String(minutes).padStart(2, '0')}min`;
+    }
+
+    function calculateHours() {
+      const arrival = document.getElementById('arrivalTime').value;
+      const lunchStart = document.getElementById('lunchStart').value;
+      const lunchEnd = document.getElementById('lunchEnd').value;
+      const departure = document.getElementById('departureTime').value;
+      const targetHours = parseFloat(document.getElementById('targetHours').value) || 8;
+
+      const arrivalMin = timeToMinutes(arrival);
+      const lunchStartMin = timeToMinutes(lunchStart);
+      const lunchEndMin = timeToMinutes(lunchEnd);
+      const departureMin = timeToMinutes(departure);
+
+      const targetSection = document.getElementById('targetSection');
+      const totalHoursEl = document.getElementById('totalHours');
+      const progressFill = document.getElementById('progressFill');
+      const requiredDeparture = document.getElementById('requiredDeparture');
+
+      if (arrivalMin === null) {
+        totalHoursEl.textContent = '0h 00min';
+        progressFill.style.width = '0%';
+        return;
+      }
+
+      let lunchDuration = 0;
+      if (lunchStartMin !== null && lunchEndMin !== null && lunchEndMin > lunchStartMin) {
+        lunchDuration = lunchEndMin - lunchStartMin;
+      }
+
+      if (departure && departureMin !== null) {
+        targetSection.classList.add('hidden');
+
+        let workedMinutes = departureMin - arrivalMin - lunchDuration;
+        if (workedMinutes < 0) workedMinutes = 0;
+
+        totalHoursEl.textContent = formatDuration(workedMinutes);
+
+        const progressPercent = Math.min((workedMinutes / (targetHours * 60)) * 100, 100);
+        progressFill.style.width = `${progressPercent}%`;
+
+        if (workedMinutes >= targetHours * 60) {
+          progressFill.style.background = 'linear-gradient(90deg, #16a34a 0%, #22c55e 100%)';
+        } else {
+          progressFill.style.background = 'linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%)';
+        }
+      } else {
+        targetSection.classList.remove('hidden');
+
+        const now = new Date();
+        const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+        let endTimeForCalc = currentMinutes;
+        if (lunchEndMin !== null && currentMinutes < lunchEndMin) {
+          endTimeForCalc = lunchEndMin;
+        }
+
+        let currentWorkedMinutes = 0;
+        if (lunchStartMin !== null && endTimeForCalc >= lunchStartMin) {
+          currentWorkedMinutes = endTimeForCalc - arrivalMin - lunchDuration;
+        } else {
+          currentWorkedMinutes = endTimeForCalc - arrivalMin;
+        }
+        if (currentWorkedMinutes < 0) currentWorkedMinutes = 0;
+
+        totalHoursEl.textContent = formatDuration(currentWorkedMinutes) + ' (en cours)';
+
+        const progressPercent = Math.min((currentWorkedMinutes / (targetHours * 60)) * 100, 100);
+        progressFill.style.width = `${progressPercent}%`;
+        progressFill.style.background = 'linear-gradient(90deg, #f59e0b 0%, #fb7185 100%)';
+
+        const targetMinutes = targetHours * 60;
+        const requiredDepartureMin = arrivalMin + lunchDuration + targetMinutes;
+
+        if (requiredDepartureMin > 24 * 60) {
+          requiredDeparture.textContent = 'Impossible';
+        } else {
+          requiredDeparture.textContent = minutesToTime(requiredDepartureMin);
+        }
+      }
+    }
+
+    function resetForm() {
+      document.getElementById('arrivalTime').value = '09:00';
+      document.getElementById('lunchStart').value = '12:00';
+      document.getElementById('lunchEnd').value = '13:00';
+      document.getElementById('departureTime').value = '';
+      document.getElementById('targetHours').value = '8';
+      calculateHours();
+    }
+
+    document.getElementById('arrivalTime').addEventListener('change', calculateHours);
+    document.getElementById('lunchStart').addEventListener('change', calculateHours);
+    document.getElementById('lunchEnd').addEventListener('change', calculateHours);
+    document.getElementById('departureTime').addEventListener('change', calculateHours);
+    document.getElementById('targetHours').addEventListener('input', calculateHours);
+
+    updateCurrentTime();
+    setInterval(updateCurrentTime, 1000);
+    setInterval(calculateHours, 60000);
+    calculateHours();
+  </script>
+</body>
+</html>
