@@ -1,5 +1,5 @@
 :root{
-  --bg: #eef6ff;
+  --bg: #f5f1ea;
   --card: #ffffff;
   --text: #0f172a;      /* slate-900 */
   --muted: #64748b;     /* slate-500 */
@@ -25,8 +25,9 @@ body{
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
   color: var(--text);
   background:
-    radial-gradient(1200px 500px at 10% 0%, rgba(79,70,229,0.10), transparent 60%),
-    radial-gradient(900px 500px at 90% 10%, rgba(124,58,237,0.08), transparent 55%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 244, 239, 0.95) 42%, rgba(242, 236, 228, 0.95) 100%),
+    radial-gradient(1200px 500px at 15% -10%, rgba(214, 192, 166, 0.25), transparent 60%),
+    radial-gradient(900px 500px at 85% 0%, rgba(198, 210, 214, 0.25), transparent 55%),
     var(--bg);
   display: grid;
   place-items: center;
