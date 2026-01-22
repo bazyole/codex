@@ -130,6 +130,7 @@
       const hours = String(now.getHours()).padStart(2, '0');
       const minutes = String(now.getMinutes()).padStart(2, '0');
       document.getElementById(inputId).value = `${hours}:${minutes}`;
+      saveFormData();
       calculateHours();
     }
 
@@ -279,19 +280,19 @@
       calculateHours();
     }
 
-    document.getElementById('arrivalTime').addEventListener('change', () => {
+    document.getElementById('arrivalTime').addEventListener('input', () => {
       saveFormData();
       calculateHours();
     });
-    document.getElementById('lunchStart').addEventListener('change', () => {
+    document.getElementById('lunchStart').addEventListener('input', () => {
       saveFormData();
       calculateHours();
     });
-    document.getElementById('lunchEnd').addEventListener('change', () => {
+    document.getElementById('lunchEnd').addEventListener('input', () => {
       saveFormData();
       calculateHours();
     });
-    document.getElementById('departureTime').addEventListener('change', () => {
+    document.getElementById('departureTime').addEventListener('input', () => {
       saveFormData();
       calculateHours();
     });
@@ -299,6 +300,8 @@
       saveFormData();
       calculateHours();
     });
+
+    window.addEventListener('beforeunload', saveFormData);
 
     loadFormData();
     updateCurrentTime();
