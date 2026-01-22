@@ -115,6 +115,9 @@
   </div>
 
   <script>
+    const STORAGE_KEY = 'workHoursForm';
+    const STORAGE_DATE_KEY = 'workHoursFormDate';
+
     function updateCurrentTime() {
       const now = new Date();
       const hours = String(now.getHours()).padStart(2, '0');
@@ -229,21 +232,75 @@
       }
     }
 
+    function saveFormData() {
+      const data = {
+        arrivalTime: document.getElementById('arrivalTime').value,
+        lunchStart: document.getElementById('lunchStart').value,
+        lunchEnd: document.getElementById('lunchEnd').value,
+        departureTime: document.getElementById('departureTime').value,
+        targetHours: document.getElementById('targetHours').value,
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      localStorage.setItem(STORAGE_DATE_KEY, new Date().toDateString());
+    }
+
+    function loadFormData() {
+      const savedDate = localStorage.getItem(STORAGE_DATE_KEY);
+      const today = new Date().toDateString();
+      if (!savedDate || savedDate !== today) {
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.setItem(STORAGE_DATE_KEY, today);
+        return;
+      }
+
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (!stored) return;
+      try {
+        const data = JSON.parse(stored);
+        if (data.arrivalTime) document.getElementById('arrivalTime').value = data.arrivalTime;
+        if (data.lunchStart) document.getElementById('lunchStart').value = data.lunchStart;
+        if (data.lunchEnd) document.getElementById('lunchEnd').value = data.lunchEnd;
+        if (data.departureTime !== undefined) {
+          document.getElementById('departureTime').value = data.departureTime;
+        }
+        if (data.targetHours) document.getElementById('targetHours').value = data.targetHours;
+      } catch (error) {
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    }
+
     function resetForm() {
       document.getElementById('arrivalTime').value = '09:00';
       document.getElementById('lunchStart').value = '12:00';
       document.getElementById('lunchEnd').value = '13:00';
       document.getElementById('departureTime').value = '';
       document.getElementById('targetHours').value = '8';
+      localStorage.removeItem(STORAGE_KEY);
       calculateHours();
     }
 
-    document.getElementById('arrivalTime').addEventListener('change', calculateHours);
-    document.getElementById('lunchStart').addEventListener('change', calculateHours);
-    document.getElementById('lunchEnd').addEventListener('change', calculateHours);
-    document.getElementById('departureTime').addEventListener('change', calculateHours);
-    document.getElementById('targetHours').addEventListener('input', calculateHours);
+    document.getElementById('arrivalTime').addEventListener('change', () => {
+      saveFormData();
+      calculateHours();
+    });
+    document.getElementById('lunchStart').addEventListener('change', () => {
+      saveFormData();
+      calculateHours();
+    });
+    document.getElementById('lunchEnd').addEventListener('change', () => {
+      saveFormData();
+      calculateHours();
+    });
+    document.getElementById('departureTime').addEventListener('change', () => {
+      saveFormData();
+      calculateHours();
+    });
+    document.getElementById('targetHours').addEventListener('input', () => {
+      saveFormData();
+      calculateHours();
+    });
 
+    loadFormData();
     updateCurrentTime();
     setInterval(updateCurrentTime, 1000);
     setInterval(calculateHours, 60000);
