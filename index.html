@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -87,7 +88,7 @@
       <div class="progress-container">
         <div class="progress-top">
           <span>Progression</span>
-          <span>Objectif : <strong>8h</strong></span>
+          <span>Objectif : <strong id="targetHoursLabel">8h</strong></span>
         </div>
         <div class="progress-bar">
           <div class="progress-fill" id="progressFill"></div>
@@ -169,6 +170,12 @@
       const totalHoursEl = document.getElementById('totalHours');
       const progressFill = document.getElementById('progressFill');
       const requiredDeparture = document.getElementById('requiredDeparture');
+      const targetHoursLabel = document.getElementById('targetHoursLabel');
+
+      // Mettre à jour le label de l'objectif dans la barre de progression
+      if (targetHoursLabel) {
+        targetHoursLabel.textContent = `${targetHours}h`;
+      }
 
       if (arrivalMin === null) {
         totalHoursEl.textContent = '0h 00min';
@@ -203,16 +210,18 @@
         const now = new Date();
         const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
-        let endTimeForCalc = currentMinutes;
-        if (lunchEndMin !== null && currentMinutes < lunchEndMin) {
-          endTimeForCalc = lunchEndMin;
-        }
-
         let currentWorkedMinutes = 0;
-        if (lunchStartMin !== null && endTimeForCalc >= lunchStartMin) {
-          currentWorkedMinutes = endTimeForCalc - arrivalMin - lunchDuration;
+        if (lunchStartMin !== null && currentMinutes >= lunchStartMin) {
+          if (lunchEndMin !== null && currentMinutes < lunchEndMin) {
+            // On est en train de manger
+            currentWorkedMinutes = lunchStartMin - arrivalMin;
+          } else {
+            // On a fini de manger
+            currentWorkedMinutes = currentMinutes - arrivalMin - lunchDuration;
+          }
         } else {
-          currentWorkedMinutes = endTimeForCalc - arrivalMin;
+          // On n'a pas encore mangé
+          currentWorkedMinutes = currentMinutes - arrivalMin;
         }
         if (currentWorkedMinutes < 0) currentWorkedMinutes = 0;
 
@@ -310,4 +319,5 @@
     calculateHours();
   </script>
 </body>
+
 </html>
